@@ -1,57 +1,22 @@
-name: Compilar APK Android
+[app]
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - principal
+title = Meu Aplicativo
+package.name = meuaplicativo
+package.domain = org.exemplo
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas
+version = 0.1
 
-    steps:
-      - name: Obter código
-        uses: actions/checkout@v4
+requirements = python3,kivy
+orientation = portrait
+fullscreen = 0
 
-      - name: Preparar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+android.permissions = INTERNET
+android.api = 35
+android.minapi = 23
 
-      - name: Preparar Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+[buildozer]
 
-      - name: Instalar dependências do sistema
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            git zip unzip autoconf automake libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev \
-            cmake libffi-dev libssl-dev libltdl-dev
-
-      - name: Instalar Buildozer
-        run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython==0.29.36
-
-      - name: Aceitar licenças Android
-        run: |
-          mkdir -p "$HOME/.buildozer"
-          yes | buildozer android update || true
-
-      - name: Compilar APK
-        env:
-          ANDROID_ACCEPT_SDK_LICENSE: "1"
-        run: |
-          yes | buildozer -v android debug
-
-      - name: Disponibilizar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: meu-apk-android
-          path: bin/*.apk
-          if-no-files-found: error
+log_level = 2
+warn_on_root = 1
