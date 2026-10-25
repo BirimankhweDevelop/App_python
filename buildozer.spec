@@ -1,63 +1,34 @@
-name: Compilar APK Android
+[app]
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - principal
+title = Aplicativo Python
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+package.name = aplicativopython
 
-    steps:
-      - name: Obter código
-        uses: actions/checkout@v4
+package.domain = org.birimankhwe
 
-      - name: Preparar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+source.dir = .
 
-      - name: Preparar Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+source.include_exts = py,png,jpg,jpeg,kv,atlas
 
-      - name: Instalar dependências
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            git zip unzip autoconf automake libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev \
-            cmake libffi-dev libssl-dev libltdl-dev
+version = 0.1
 
-      - name: Instalar Buildozer
-        run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython==0.29.36
+requirements = python3,kivy
 
-      - name: Aceitar licenças e instalar ferramentas Android
-        run: |
-          SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager"
-          if [ ! -x "$SDKMANAGER" ]; then
-            SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
-          fi
-          if [ ! -x "$SDKMANAGER" ]; then
-            echo "sdkmanager ainda não foi instalado pelo Buildozer."
-            exit 1
-          fi
-          yes | "$SDKMANAGER" --licenses || true
-          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+orientation = portrait
 
-      - name: Compilar APK
-        run: |
-          yes | buildozer -v android debug
+fullscreen = 0
 
-      - name: Disponibilizar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: meu-apk-android
-          path: bin/*.apk
-          if-no-files-found: error
+android.api = 35
+
+android.minapi = 23
+
+android.archs = arm64-v8a
+
+android.accept_sdk_license = True
+
+
+[buildozer]
+
+log_level = 2
+
+warn_on_root = 1
